@@ -77,9 +77,7 @@ func iniciarMonitoramento() {
 func testaSite(site string) {
 	resp, err := http.Get(site)
 	
-	if err != nil {
-		fmt.Println("Ocorreu um erro:", err)
-	}
+	verificaErro(err)
 	
 	if resp.StatusCode == 200 {
 		fmt.Println("Site:", site, "foi carregado com sucesso!")
@@ -96,12 +94,8 @@ func leSitesDoArquivo() []string {
 	
 	var sites []string
 	
-	arquivo, err := os.Open("sites.txt")	
-	
-	if err != nil {
-		fmt.Println("Ocorreu um erro:", err)
-	}
-	
+	arquivo, err := os.Open("sites.txt")
+	verificaErro(err)
 	leitor := bufio.NewReader(arquivo)
 	
 	for {
@@ -119,22 +113,20 @@ func leSitesDoArquivo() []string {
 
 func registraLog(site string, status bool) {
 	arquivo, err := os.OpenFile("log.txt", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-	
-	if err != nil {
-		fmt.Println(err)		
-	}
-
+	verificaErro(err)
 	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + " - " + site + " - online: " + strconv.FormatBool(status) + "\n")
-
 	arquivo.Close()
 }
 
 func imprimeLogs() {
     arquivo, err := ioutil.ReadFile("log.txt")
+    verificaErro(err)
+    fmt.Println(string(arquivo))
+}
 
+func verificaErro(err error) {
     if err != nil {
         fmt.Println("Ocorreu um erro:", err)
+        return
     }
-
-    fmt.Println(string(arquivo))
 }
